@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using roomy.API.Middleware;
 using roomy.Application.Commands.Auths;
 using roomy.Application.Interfaces;
@@ -15,9 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 var jwtSecret = builder.Configuration["Jwt:Secret"] ?? "your-super-secret-key-change-in-production-12345";
 var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "roomy";
 var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "roomy-api";
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? "Data Source=roomy.db";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=roomy.db";
 
 builder.Services.AddDbContext<RoomyDbContext>(options =>
 {
@@ -45,17 +44,42 @@ builder.Services
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new() { Title = "Roomy API", Version = "v1" });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your raw JWT token to authenticate."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecuritySchemeReference("Bearer", null),
+            new List<string>()
+        }
+    });
+});
+
 builder.Services.AddAuthorization();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(LoginCommand).Assembly));
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IOfficeRepository, OfficeRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IJwtTokenGenerator>(_ => new JwtTokenGenerator(jwtSecret, jwtIssuer, jwtAudience));
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -63,8 +87,8 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
-builder.Services.AddLogging();
 
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
@@ -82,6 +106,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -2,11 +2,16 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY Roomy.slnx ./
-COPY src/roomy.API/roomy.API.csproj src/roomy.API/
-COPY src/roomy.Application/roomy.Application.csproj src/roomy.Application/
-COPY src/roomy.Domain/roomy.Domain.csproj src/roomy.Domain/
-COPY src/roomy.Infrastructure/roomy.Infrastructure.csproj src/roomy.Infrastructure/
-RUN dotnet restore src/roomy.API/roomy.API.csproj
+COPY Directory.Build.props ./
+COPY Directory.Packages.props ./
+
+COPY src/roomy.API/roomy.API.csproj ./src/roomy.API/
+COPY src/roomy.Application/roomy.Application.csproj ./src/roomy.Application/
+COPY src/roomy.Domain/roomy.Domain.csproj ./src/roomy.Domain/
+COPY src/roomy.Infrastructure/roomy.Infrastructure.csproj ./src/roomy.Infrastructure/
+COPY src/roomy.Tests/roomy.Tests.csproj ./src/roomy.Tests/
+
+RUN dotnet restore Roomy.slnx
 
 COPY . .
 RUN dotnet publish src/roomy.API/roomy.API.csproj -c Release -o /app/publish /p:UseAppHost=false

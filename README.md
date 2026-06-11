@@ -75,6 +75,7 @@ The solution is split into four projects:
 ### Option 1: Docker Compose
 ```bash
 docker-compose up --build
+dotnet run --project src/roomy.API
 ```
 
 API base URL:
