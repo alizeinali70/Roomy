@@ -1,0 +1,69 @@
+@roomy.API_HostAddress = http://localhost:5000
+@adminEmail = admin@roomy.local
+@adminPassword = admin123
+@officeId = 00000000-0000-0000-0000-000000000000
+@bookingId = 00000000-0000-0000-0000-000000000000
+@userId = 00000000-0000-0000-0000-000000000000
+
+### Login as default admin
+POST {{roomy.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+### Create user (paste token)
+POST {{roomy.API_HostAddress}}/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "email": "employee@roomy.local",
+  "password": "employee123",
+  "role": 1
+}
+
+### Create office
+POST {{roomy.API_HostAddress}}/api/offices
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Berlin HQ",
+  "location": "Berlin",
+  "totalWorkspaces": 12
+}
+
+### Book slot for current user
+POST {{roomy.API_HostAddress}}/api/bookings
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "officeId": "{{officeId}}",
+  "date": "2026-01-15T09:00:00Z"
+}
+
+### Get monthly calendar
+GET {{roomy.API_HostAddress}}/api/offices/{{officeId}}/calendar?year=2026&month=1
+Authorization: Bearer {{token}}
+
+### Get my bookings
+GET {{roomy.API_HostAddress}}/api/bookings/me
+Authorization: Bearer {{token}}
+
+### Update booking
+PUT {{roomy.API_HostAddress}}/api/bookings/{{bookingId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "officeId": "{{officeId}}",
+  "date": "2026-01-16T09:00:00Z"
+}
+
+### Cancel booking
+DELETE {{roomy.API_HostAddress}}/api/bookings/{{bookingId}}
+Authorization: Bearer {{token}}

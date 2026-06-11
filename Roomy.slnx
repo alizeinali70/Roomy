@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/.gitignore/" />
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="docker-compose.yml" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/roomy.API/roomy.API.csproj" />
+    <Project Path="src/roomy.Application/roomy.Application.csproj" Id="82848d19-d847-405e-91af-57015a3620fe" />
+    <Project Path="src/roomy.Domain/roomy.Domain.csproj" Id="5e802ff3-335c-4e2e-9d38-b9661f420386" />
+    <Project Path="src/roomy.Infrastructure/roomy.Infrastructure.csproj" Id="27a51ecf-2f32-4979-812c-b77b01476e57" />
+    <Project Path="src/roomy.Tests/roomy.Tests.csproj" Id="69755409-5a50-44b0-851f-6e1fab1a6cf2" />
+  </Folder>
+</Solution>
